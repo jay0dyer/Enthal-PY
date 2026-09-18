@@ -4,7 +4,6 @@ from concurrent.futures import ProcessPoolExecutor
 import os
 import sys
 import ast
-from xyzgraph import build_graph_rdkit
 
 # orginal csv isnt on github as its not nesseray to the project
 csv = "qm9star_raw.csv"
@@ -24,8 +23,7 @@ BondOrders = {1:Chem.BondType.SINGLE, 2:Chem.BondType.DOUBLE, 3:Chem.BondType.TR
 
 def init_worker():
     """ Runs once when each CPU process is spawned, permanently muting it. """
-    import xyz2mol  # Import inside the worker so it respects the muted stdout
-    #sys.stdout = open(os.devnull, 'w')
+    sys.stdout = open(os.devnull, 'w')
 
 def createSmiles(atoms, bonds, formal_charges, formal_num_radicals):
     mol = Chem.RWMol()
