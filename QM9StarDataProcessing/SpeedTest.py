@@ -101,7 +101,6 @@ def speedtestDB(querys):
         # Query a specific table using a parameterized query (?)
         cursor.execute("SELECT * FROM Radical_0 WHERE SMILES = ?", (query,))
         result.append(cursor.fetchall())
-    #print("db :",result)
 
 speedtestCSV(target_smiles)
 speedtestDB(target_smiles)
