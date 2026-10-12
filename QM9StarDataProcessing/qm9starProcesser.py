@@ -38,8 +38,6 @@ def createSmiles(atoms, bonds, formal_charges, formal_num_radicals):
     for start_idx, end_idx, bond_type in bonds:
         mol.AddBond(start_idx, end_idx, BondOrders[bond_type])
 
-    Charge = Chem.GetFormalCharge(mol)
-
     Chem.SanitizeMol(mol)
     mol = Chem.RemoveHs(mol)
     SMILES = Chem.MolToSmiles(mol)
