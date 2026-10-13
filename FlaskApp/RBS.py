@@ -18,7 +18,7 @@ class EnthalpyMolecule:
 
 engine = EnthalpySearch()
 
-SubMol = Chem.MolFromSmiles("[C]=C1O[C+]1OCCCO")
-A = Chem.MolFromSmiles("[C]=C1O[C+]1OC[CH2]")
-B = Chem.MolFromSmiles("[CH2]O")
-print("enthalpy for bond N#N is ", engine.FindBondEnthalpy(A, B, SubMol))
+SubMol = Chem.MolFromSmiles("C1CC1C2CC2")
+A = Chem.MolFromSmiles("OCC[CH2]")
+B = Chem.MolFromSmiles("OCC[CH2]")
+print("enthalpy for bond OCCCCCCO is ", engine.FindBondEnthalpy(A, B, SubMol))

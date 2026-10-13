@@ -1,5 +1,6 @@
 import rdkit
 from rdkit import Chem
+from rdkit.Chem import Descriptors
 import sqlite3
 
 class EnthalpySearch:
@@ -18,7 +19,7 @@ class EnthalpySearch:
             raise Exception(f"SMILES : {SubMolSmiles} not found in database")
 
     def SearchMolEnthalpy(self, mol):
-        Charge = Chem.GetFormalCharge(mol)
+        Charge = Descriptors.NumRadicalElectrons(mol)
         canonical_smiles = Chem.MolToSmiles(mol)
         return self.SearchRadicalsBySMILES(canonical_smiles, Charge)
 
@@ -29,4 +30,5 @@ class EnthalpySearch:
 
 if __name__ == "__main__":
     engine = EnthalpySearch()
-    engine.SearchRadicalsBySMILES("[N]",2)
+    SubMol = Chem.MolFromSmiles("[C]=C1O[C+]1OCCCO")
+    engine.SearchMolEnthalpy(SubMol)
