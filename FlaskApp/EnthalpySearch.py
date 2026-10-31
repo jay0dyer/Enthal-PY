@@ -23,12 +23,12 @@ class EnthalpySearch:
         canonical_smiles = Chem.MolToSmiles(mol)
         return self.SearchRadicalsBySMILES(canonical_smiles, Charge)
 
-    def FindBondEnthalpy(self, fragmentA, fragmentB, SubMolecule):
+    def FindBondEnthalpy(self, fragments, SubMolecule):
         bondEnthalpy = (self.SearchMolEnthalpy(SubMolecule) -
-                        (self.SearchMolEnthalpy(fragmentA) + self.SearchMolEnthalpy(fragmentB)))
+                        sum([self.SearchMolEnthalpy(fragment) for fragment in fragments]))
         return bondEnthalpy
 
 if __name__ == "__main__":
     engine = EnthalpySearch()
-    SubMol = Chem.MolFromSmiles("[C]=C1O[C+]1OCCCO")
+    SubMol = Chem.MolFromSmiles("CC[CH2]")
     engine.SearchMolEnthalpy(SubMol)
