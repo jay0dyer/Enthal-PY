@@ -10,7 +10,7 @@ class EnthalpyMolecule(EnthalpySearch):
         Chem.Kekulize(self.mol, clearAromaticFlags=True)
 
     def RBS(self):
-        pass
+        self.FindFragmentsInSub(self.mol)
 
     def removeDummyAtom(self, mol):
         bondTypeHomolyticLookUp = {
@@ -20,33 +20,36 @@ class EnthalpyMolecule(EnthalpySearch):
         }
 
         rw_mol = Chem.RWMol(mol)
-        dummy_idx = [atom.GetIdx() for atom in rw_mol.GetAtoms() if atom.GetAtomicNum() == 0][0]
-        dummy_atom = rw_mol.GetAtomWithIdx(dummy_idx)
+        dummy_idxs = [atom.GetIdx() for atom in rw_mol.GetAtoms() if atom.GetAtomicNum() == 0]
+        dummy_atoms = [rw_mol.GetAtomWithIdx(dummy_idx) for dummy_idx in dummy_idxs]
 
-        for neighbor in dummy_atom.GetNeighbors():
-            bond = rw_mol.GetBondBetweenAtoms(dummy_idx, neighbor.GetIdx())
-            bondType = str(bond.GetBondType())
-            neighbor.SetNumRadicalElectrons(bondTypeHomolyticLookUp[bondType])
+        rw_mol.BeginBatchEdit() # stops index changing when atoms are removed as there removed in batchs
 
-        # 5. Remove the dummy atom
-        rw_mol.RemoveAtom(dummy_idx)
+        for dummy_atom, dummy_idx in zip(dummy_atoms, dummy_idxs):
+            for neighbor in dummy_atom.GetNeighbors():
+                bond = rw_mol.GetBondBetweenAtoms(dummy_idx, neighbor.GetIdx())
+                bondType = str(bond.GetBondType()) # gets bond type to reffence for radical state
+                neighbor.SetNumRadicalElectrons(bondTypeHomolyticLookUp[bondType])
+                rw_mol.RemoveAtom(dummy_idx)
+        rw_mol.CommitBatchEdit()
 
         Chem.SanitizeMol(rw_mol)
 
         return rw_mol
 
-    def FindFragments(self, index):
-        bondType = self.mol.GetBonds()[index].GetBondType()
-        mol_frag = Chem.FragmentOnBonds(self.mol, (index,), bondTypes=[bondType])
+    def FindFragmentsInSub(self, submol):
+        size = submol.GetNumAtoms()
+        index = round(size / 2)
+        print(index)
+        bondType = submol.GetBonds()[index].GetBondType()
+        mol_frag = Chem.FragmentOnBonds(submol, (index,), bondTypes=[bondType])
         fragments = Chem.GetMolFrags(mol_frag, asMols=True)
 
         for i, frag in enumerate(fragments):
             frag = self.removeDummyAtom(frag)
             print("fragment :",Chem.MolToSmiles(frag))
-            
 
 
 
-
-EnthalpyMol = EnthalpyMolecule("c1ccccc1")
-EnthalpyMol.FindFragments(0)
+EnthalpyMol = EnthalpyMolecule("C=C=C=C")
+EnthalpyMol.RBS()
