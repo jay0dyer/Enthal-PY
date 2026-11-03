@@ -7,10 +7,17 @@ class EnthalpyMolecule(EnthalpySearch):
     def __init__(self, Smiles):
         super().__init__() # calls the search engines init .. bruv
         self.mol = Chem.MolFromSmiles(Smiles)
+        self.Smiles = Smiles
         Chem.Kekulize(self.mol, clearAromaticFlags=True)
 
     def RBS(self):
-        self.FindFragmentsInSub(self.mol)
+        try:
+            halfs = self.FindFragmentsInSub(self.mol)
+            print(self.SearchMolEnthalpy(self.mol) - sum([self.SearchMolEnthalpy(half) for half in halfs]))
+            return True
+        except:
+            print(self.Smiles, "failed")
+            return False
 
     def removeDummyAtom(self, mol):
         bondTypeHomolyticLookUp = {
@@ -38,18 +45,40 @@ class EnthalpyMolecule(EnthalpySearch):
         return rw_mol
 
     def FindFragmentsInSub(self, submol):
-        size = submol.GetNumAtoms()
+        size = submol.GetNumAtoms() - 1.9
         index = round(size / 2)
-        print(index)
+
         bondType = submol.GetBonds()[index].GetBondType()
         mol_frag = Chem.FragmentOnBonds(submol, (index,), bondTypes=[bondType])
-        fragments = Chem.GetMolFrags(mol_frag, asMols=True)
+        fragments = list(Chem.GetMolFrags(mol_frag, asMols=True))
 
         for i, frag in enumerate(fragments):
-            frag = self.removeDummyAtom(frag)
-            print("fragment :",Chem.MolToSmiles(frag))
+            fragments[i] = self.removeDummyAtom(frag)
+
+        return fragments
 
 
 
-EnthalpyMol = EnthalpyMolecule("C=C=C=C")
-EnthalpyMol.RBS()
+
+moleculesmiles = [
+    "N#N",
+    "O=O",
+
+    "NC=O",
+    "NC(N)=O",
+    "CC(N)=O",
+    "NCC(=O)O",
+    "NCCO",
+    "CNC=O",
+    "CC(N)C(=O)O",
+    "NC(=O)C(=O)N",
+    "CN(C)C=O",
+    "OCC(N)C(=O)O"
+]
+s = 0
+for smiles in moleculesmiles:
+    EnthalpyMol = EnthalpyMolecule(smiles)
+    if EnthalpyMol.RBS():
+        s+=1
+
+print(s,"sucesses out of ", len(moleculesmiles))
