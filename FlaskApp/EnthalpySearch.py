@@ -8,12 +8,14 @@ class EnthalpySearch:
         self.conn = sqlite3.connect("Database/Temp/EnthalpyTables.db")
         self.cursor = self.conn.cursor()
 
-    def SearchRadicalsBySMILES(self, SubMolSmiles, charge):
-        print("SearchRadicalsBySMILES : searching for", SubMolSmiles, f"in Radical_{charge}", end=" ")
+    def SearchRadicalsBySMILES(self, SubMolSmiles, charge, mute=True):
+        if not mute:
+            print("SearchRadicalsBySMILES : searching for", SubMolSmiles, f"in Radical_{charge}", end=" ")
         self.cursor.execute(f"SELECT * FROM Radical_{charge} WHERE SMILES = ?", (SubMolSmiles,))
         result = self.cursor.fetchall()
         if len(result) != 0:
-            print("Enthalpy found", result[0][1])
+            if not mute:
+                print("Enthalpy found", result[0][1])
             return result[0][1]
         else:
             raise Exception(f"SMILES : {SubMolSmiles} not found in database")
