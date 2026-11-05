@@ -61,18 +61,7 @@ class EnthalpyMolecule(EnthalpySearch):
 
 
 moleculesmiles = [
-    "N#N",
-    "O=O",
-    "NC=O",
-    "NC(N)=O",
-    "CC(N)=O",
-    "NCC(=O)O",
-    "NCCO",
-    "CNC=O",
-    "CC(N)C(=O)O",
-    "NC(=O)C(=O)N",
-    "CN(C)C=O",
-    "OCC(N)C(=O)O"
+    "C#N"
 ]
 s = 0
 for smiles in moleculesmiles:

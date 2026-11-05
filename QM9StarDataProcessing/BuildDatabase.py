@@ -15,7 +15,7 @@ table_creation_query = """
         HF INT
     );
 """
-for i in range(3):
+for i in range(9):
     cursor.execute(table_creation_query.format(i=i))
 
 conn.commit()
@@ -30,7 +30,22 @@ for i, row in CSVForm.iterrows():
     p += 1
     print((p/sizecsv)*100,"%")
 
-for i in range(3):
+for i in range(9):
     cursor.execute(f"CREATE INDEX IF NOT EXISTS idx_smiles_{i} ON Radical_{i}(SMILES)")
 
 conn.commit()
+
+
+# addational processing
+
+import AppendMissingRaidcals
+
+print("appending missing content ...")
+AppendMissingRaidcals.AppendMissingRadicals()
+
+import DBcompress
+
+print("compressing DB ...")
+DBcompress.compressDB()
+
+print("Done! :D")

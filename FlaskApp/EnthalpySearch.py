@@ -8,7 +8,7 @@ class EnthalpySearch:
         self.conn = sqlite3.connect("Database/Temp/EnthalpyTables.db")
         self.cursor = self.conn.cursor()
 
-    def SearchRadicalsBySMILES(self, SubMolSmiles, charge, mute=True):
+    def SearchRadicalsBySMILES(self, SubMolSmiles, charge, mute=False):
         if not mute:
             print("SearchRadicalsBySMILES : searching for", SubMolSmiles, f"in Radical_{charge}", end=" ")
         self.cursor.execute(f"SELECT * FROM Radical_{charge} WHERE SMILES = ?", (SubMolSmiles,))
@@ -32,5 +32,5 @@ class EnthalpySearch:
 
 if __name__ == "__main__":
     engine = EnthalpySearch()
-    SubMol = Chem.MolFromSmiles("CC[CH2]")
+    SubMol = Chem.MolFromSmiles("[CH]")
     engine.SearchMolEnthalpy(SubMol)
