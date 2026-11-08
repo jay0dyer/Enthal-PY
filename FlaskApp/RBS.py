@@ -1,23 +1,71 @@
+from logging import exception
+
 from EnthalpySearch import EnthalpySearch
-import rdkit
 from rdkit import Chem
-from rdkit.Chem import AllChem
+import MolViewer
 
 class EnthalpyMolecule(EnthalpySearch):
     def __init__(self, Smiles):
         super().__init__() # calls the search engines init .. bruv
-        self.mol = Chem.MolFromSmiles(Smiles)
         self.Smiles = Smiles
+        self.mol = Chem.MolFromSmiles(Smiles)
         Chem.Kekulize(self.mol, clearAromaticFlags=True)
 
+        self.EnthalpyMapMol = self.BabyRBS()
+
     def RBS(self):
-        try:
-            halfs = self.FindFragmentsInSub(self.mol)
-            print(self.SearchMolEnthalpy(self.mol) - sum([self.SearchMolEnthalpy(half) for half in halfs]))
-            return True
-        except:
-            print(self.Smiles, "failed")
-            return False
+        pass
+
+    def BabyRBS(self): # RBS where the sub mol is allways two atoms
+        EnthalpyMapMol = Chem.AddHs(self.mol)
+        for bond in EnthalpyMapMol.GetBonds():
+            bondtype = bond.GetBondType()
+            submol = Chem.RWMol()
+            atom1 = bond.GetBeginAtom()
+            atom2 = bond.GetEndAtom()
+
+            submol.AddAtom(atom1)
+            submol.AddAtom(atom2)
+
+            #print("-"*30)
+
+            submol.AddBond(0, 1, bondtype)
+            Chem.SanitizeMol(submol)
+            #print("Checking bond :",Chem.MolToSmiles(submol))
+
+            bond_idx = self.findBondIdx(submol)
+            submol, halfs = self.FindFragmentsInSub(submol, bond_idx)
+            #print("Sreaching for fragments :")
+            #for fragment in halfs:
+                #print(Chem.MolToSmiles(fragment))
+
+            Enthalpy = (sum([self.SearchMolEnthalpy(half) for half in halfs]) - self.SearchMolEnthalpy(submol))
+            bond.SetDoubleProp("Enthalpy", Enthalpy)
+        return EnthalpyMapMol
+
+    def FindBondEnthalpy(self, fragments, SubMolecule):
+        bondEnthalpy = (self.SearchMolEnthalpy(SubMolecule) -
+                        sum([self.SearchMolEnthalpy(fragment) for fragment in fragments]))
+        return bondEnthalpy
+
+    def findBondIdx(self, submol):
+        bonds_to_break = [bond.GetIdx() for bond in submol.GetBonds()
+                          if bond.GetBeginAtom().GetAtomicNum() > 1 and bond.GetEndAtom().GetAtomicNum() > 1]
+
+        if not bonds_to_break:
+            bonds_to_break = [bond.GetIdx() for bond in submol.GetBonds()
+                              if (bond.GetBeginAtom().GetAtomicNum() > 1 and bond.GetEndAtom().GetAtomicNum() == 1) or
+                              (bond.GetBeginAtom().GetAtomicNum() == 1 and bond.GetEndAtom().GetAtomicNum() > 1)]
+
+        if not bonds_to_break:
+            bonds_to_break = [bond.GetIdx() for bond in submol.GetBonds()]
+
+        if not bonds_to_break:
+            return Chem.RemoveHs(submol), []
+
+        bond_idx = bonds_to_break[len(bonds_to_break) // 2]
+
+        return bond_idx
 
     def removeDummyAtom(self, mol):
         bondTypeHomolyticLookUp = {
@@ -44,29 +92,29 @@ class EnthalpyMolecule(EnthalpySearch):
 
         return rw_mol
 
-    def FindFragmentsInSub(self, submol):
-        size = submol.GetNumAtoms() - 1.9
-        index = round(size / 2)
-
-        bondType = submol.GetBonds()[index].GetBondType()
-        mol_frag = Chem.FragmentOnBonds(submol, (index,), bondTypes=[bondType])
+    def FindFragmentsInSub(self, submol, bond_idx):
+        bondType = submol.GetBonds()[bond_idx].GetBondType()
+        mol_frag = Chem.FragmentOnBonds(submol, (bond_idx,), bondTypes=[bondType])
         fragments = list(Chem.GetMolFrags(mol_frag, asMols=True))
+
+        # removes impliecnt hydrogens for use in sreaching the DB
+        fragments = [Chem.RemoveHs(fragment, updateExplicitCount=True) for fragment in fragments]
 
         for i, frag in enumerate(fragments):
             fragments[i] = self.removeDummyAtom(frag)
 
-        return fragments
+        submol = Chem.RemoveHs(submol)
+        return submol, fragments
 
 
 
 
 moleculesmiles = [
-    "C#N"
+    "CC12CCC3C(C1CCC2O)CCC4C3CCC(C4)O",
 ]
+
 s = 0
 for smiles in moleculesmiles:
     EnthalpyMol = EnthalpyMolecule(smiles)
-    if EnthalpyMol.RBS():
-        s+=1
-
-print(s,"sucesses out of ", len(moleculesmiles))
+    EnthalpyMol.BabyRBS()
+    MolViewer.DisplayMolA(EnthalpyMol)

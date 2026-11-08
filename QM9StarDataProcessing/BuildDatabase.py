@@ -12,7 +12,7 @@ cursor = conn.cursor()
 table_creation_query = """
     CREATE TABLE IF NOT EXISTS Radical_{i} (
         SMILES VARCHAR(255) NOT NULL,
-        HF INT
+        HF REAL NOT NULL
     );
 """
 for i in range(9):
@@ -26,7 +26,7 @@ p = 0
 for i, row in CSVForm.iterrows():
 
     cursor.execute("INSERT INTO Radical_{i} VALUES ('{SMILES}', {HF})".format(
-        i=int(row["Radical Type"]),SMILES=row["SMILES"],HF=round(row["HF"])))
+        i=int(row["Radical Type"]),SMILES=row["SMILES"],HF=round(row["HF"],3)))
     p += 1
     print((p/sizecsv)*100,"%")
 
