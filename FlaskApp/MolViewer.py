@@ -22,8 +22,8 @@ def DisplayMolA(mol):
         enthalpies.append(bond.GetDoubleProp("Enthalpy"))
 
     #vmin=(min(enthalpies)-1), vmax=max(enthalpies)
-    norm = colors.TwoSlopeNorm(vcenter=(sum(enthalpies)/len(enthalpies)), vmin=0, vmax=0.6)
-    colormap = mpl.colormaps['managua'] # R means reveresed
+    norm = colors.TwoSlopeNorm(vcenter=(sum(enthalpies)/len(enthalpies)),vmin=(min(enthalpies)), vmax=max(enthalpies))
+    colormap = mpl.colormaps['coolwarm_r'] # R means reveresed
 
     highlight_bonds = []
     highlight_colors = {}

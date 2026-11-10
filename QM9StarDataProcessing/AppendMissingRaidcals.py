@@ -4,6 +4,23 @@ import sqlite3
 
 def AppendMissingRadicals():
     missing_radicals = [
+        {"SMILES": "[H][H]", "HF": -1.1268, "Radical Type": 0},  # H2 (H-H single)
+        {"SMILES": "C", "HF": -40.1951, "Radical Type": 0},  # CH4 (C-H single)
+        {"SMILES": "N", "HF": -56.1655, "Radical Type": 0},  # NH3 (N-H single)
+        {"SMILES": "O", "HF": -76.0107, "Radical Type": 0},  # H2O (O-H single)
+        {"SMILES": "CC", "HF": -79.2288, "Radical Type": 0},  # C2H6 (C-C single)
+        {"SMILES": "C=C", "HF": -78.0317, "Radical Type": 0},  # C2H4 (C=C double)
+        {"SMILES": "C#C", "HF": -76.8178, "Radical Type": 0},  # C2H2 (C#C triple)
+        {"SMILES": "CN", "HF": -95.2090, "Radical Type": 0},  # CH3NH2 (C-N single)
+        {"SMILES": "C=N", "HF": -94.0242, "Radical Type": 0},  # CH2NH (C=N double)
+        {"SMILES": "C#N", "HF": -92.8252, "Radical Type": 0},  # HCN (C#N triple)
+        {"SMILES": "CO", "HF": -115.0354, "Radical Type": 0},  # CH3OH (C-O single)
+        {"SMILES": "C=O", "HF": -113.8494, "Radical Type": 0},  # CH2O (C=O double)
+        {"SMILES": "NN", "HF": -111.1683, "Radical Type": 0},  # N2H4 (N-N single)
+        {"SMILES": "N=N", "HF": -109.9831, "Radical Type": 0},  # N2H2 (N=N double)
+        {"SMILES": "NO", "HF": -130.9821, "Radical Type": 0},  # NH2OH (N-O single)
+        {"SMILES": "OO", "HF": -150.7858, "Radical Type": 0},
+
         # --- Reference Closed-Shell Molecules ---
         {"SMILES": "O=C=O", "HF": -187.6342, "Radical Type": 0},  # CO2
         {"SMILES": "O=O", "HF": -149.6133, "Radical Type": 0},  # O2 (Triplet HF ground state)

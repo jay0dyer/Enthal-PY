@@ -110,7 +110,7 @@ class EnthalpyMolecule(EnthalpySearch):
 
 
 moleculesmiles = [
-    "CC12CCC3C(C1CCC2O)CCC4C3CCC(C4)O",
+    "CC(=O)NC",
 ]
 
 s = 0
