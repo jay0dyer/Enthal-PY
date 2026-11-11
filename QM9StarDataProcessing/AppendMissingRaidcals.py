@@ -51,7 +51,7 @@ def AppendMissingRadicals():
 
         # --- Group 1 Alkali Metals (Properly splitting M from H) ---
         {"SMILES": "[LiH]", "HF": -7.9864, "Radical Type": 0},
-        {"SMILES": "[Li]", "HF": -7.4327, "Radical Type": 1},  # Notice LiH != Li now!
+        {"SMILES": "[Li]", "HF": -7.4327, "Radical Type": 1},
         {"SMILES": "[NaH]", "HF": -162.3921, "Radical Type": 0},
         {"SMILES": "[Na]", "HF": -161.8589, "Radical Type": 1},
 
