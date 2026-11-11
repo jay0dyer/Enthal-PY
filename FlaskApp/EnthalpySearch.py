@@ -19,7 +19,7 @@ class EnthalpySearch:
             return result[0][1]
         else:
             print("Enthalpy not found")
-            raise Exception(f"SMILES : {SubMolSmiles} not found in database")
+            raise Exception(f"SMILES : {SubMolSmiles} not found in Radical_{charge}")
 
     def SearchMolEnthalpy(self, mol):
         Charge = Descriptors.NumRadicalElectrons(mol)

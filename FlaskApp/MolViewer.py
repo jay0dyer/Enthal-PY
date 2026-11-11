@@ -21,8 +21,14 @@ def DisplayMolA(mol):
     for bond in mol.GetBonds():
         enthalpies.append(bond.GetDoubleProp("Enthalpy"))
 
-    #vmin=(min(enthalpies)-1), vmax=max(enthalpies)
-    norm = colors.TwoSlopeNorm(vcenter=(sum(enthalpies)/len(enthalpies)),vmin=(min(enthalpies)), vmax=max(enthalpies))
+    vmin=(min(enthalpies)-1)
+    vmax=max(enthalpies)
+    vcenter = (sum(enthalpies) / len(enthalpies))
+    if vcenter == vmax:
+        vcenter = vcenter - 0.1
+    print(vmin, vcenter, vmax)
+    #norm = colors.TwoSlopeNorm(vcenter=vcenter, vmin=vmin, vmax=vmax)
+    norm = colors.Normalize(vmin=vmin, vmax=vmax)
     colormap = mpl.colormaps['coolwarm_r'] # R means reveresed
 
     highlight_bonds = []
